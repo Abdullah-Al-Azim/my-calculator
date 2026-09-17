@@ -24,3 +24,22 @@ jobs:
 
       - name: Run tests
         run: pytest test_calculator.py -v
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create webpage
+        run: |
+          mkdir -p public
+          echo "<h1>My Calculator App</h1>
+          <p>CI/CD pipeline দিয়ে deploy হয়েছে!</p>
+          <p>Build time: $(date)</p>" > public/index.html
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
